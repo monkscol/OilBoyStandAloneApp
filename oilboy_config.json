@@ -1,0 +1,22 @@
+{
+    "slidebook": {
+        "host": "127.0.0.1",
+        "port": 65432
+    },
+    "oilboy": {
+        "serial_number": "A003",
+        "known_devices": {
+            "A002": "DC:54:75:EB:81:B1",
+            "A003": "DC:54:75:EB:6F:2D"
+        }
+    },
+    "settings": {
+        "oilboy_objective_location": "OilBoy",
+        "oilboy_offset_microns": 50.0,
+        "default_oil_amount": 500,
+        "default_z_drop": 50.0
+    },
+    "window": {
+        "geometry": "736x817+746+1"
+    }
+}

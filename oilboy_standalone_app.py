@@ -19,12 +19,31 @@ import asyncio
 import threading
 import json
 import os
+import sys
 import logging
 import socket
 import time
 from datetime import datetime
 from bleak import BleakScanner, BleakClient
-from PIL import Image, ImageTk
+
+# PyInstaller resource path handling
+def resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for PyInstaller"""
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    
+    return os.path.join(base_path, relative_path)
+
+# Try to import PIL, but make it optional
+try:
+    from PIL import Image, ImageTk
+    PIL_AVAILABLE = True
+except ImportError:
+    PIL_AVAILABLE = False
+    print("Warning: PIL/Pillow not available. Logo will not be displayed.")
 
 # Import SBAccess for SlideBook integration
 try:
@@ -258,6 +277,17 @@ class OilBoyStandaloneApp:
         self.root.title("OilBoy Standalone Controller")
         self.root.geometry("800x700")
         
+        # Initialize debug logging
+        try:
+            with open("oilboy_debug.log", "w", encoding="utf-8") as f:
+                f.write("=== OilBoy Standalone Controller Debug Log ===\n")
+                f.write(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Frozen: {getattr(sys, 'frozen', False)}\n")
+                f.write(f"PIL Available: {PIL_AVAILABLE}\n")
+                f.write("=" * 50 + "\n")
+        except Exception:
+            pass
+        
         # Configuration
         self.config_file = "oilboy_config.json"
         self.config = self.load_config()
@@ -301,31 +331,91 @@ class OilBoyStandaloneApp:
 
     def load_logo(self, parent_frame):
         """Load and display the OilBoy logo"""
+        # FORCE PIL loading - ignore the global PIL_AVAILABLE flag
         try:
-            # Load the logo image
-            logo_path = "OilBoy_software logo.png"
+            from PIL import Image, ImageTk
+            self.log_message("FORCE: PIL imported successfully in load_logo")
+        except ImportError as e:
+            self.log_message(f"FORCE: PIL import failed: {e}")
+            # Create a text-based logo if PIL is not available
+            logo_label = ttk.Label(parent_frame, text="OilBoy", font=("Arial", 16, "bold"))
+            logo_label.grid(row=0, column=2, sticky=tk.E, padx=(10, 0))
+            self.log_message("PIL not available - using text logo")
+            return
+            
+        try:
+            # Load the logo image using resource path
+            logo_path = resource_path("OilBoy_software logo.png")
+            self.log_message(f"Looking for logo at: {logo_path}")
+            
             if os.path.exists(logo_path):
-                # Open and resize the image
-                image = Image.open(logo_path)
-                # Resize to a reasonable size for the UI (e.g., 100x100 pixels)
-                image = image.resize((100, 100), Image.Resampling.LANCZOS)
-                self.logo_photo = ImageTk.PhotoImage(image)
-                
-                # Create and place the logo label (right side of header)
-                logo_label = ttk.Label(parent_frame, image=self.logo_photo)
-                logo_label.grid(row=0, column=2, sticky=tk.E, padx=(10, 0))
-                
-                # Set the logo as the application icon
-                self.set_application_icon(logo_path)
-                
-                self.log_message("OilBoy logo loaded successfully")
+                self.log_message(f"Logo file found, attempting to load with PIL...")
+                try:
+                    # Open and resize the image
+                    image = Image.open(logo_path)
+                    self.log_message(f"Image opened successfully, size: {image.size}")
+                    
+                    # Resize to a reasonable size for the UI (e.g., 100x100 pixels)
+                    image = image.resize((100, 100), Image.Resampling.LANCZOS)
+                    self.log_message(f"Image resized to 100x100")
+                    
+                    self.logo_photo = ImageTk.PhotoImage(image)
+                    self.log_message(f"PhotoImage created successfully")
+                    
+                    # Create and place the logo label (right side of header)
+                    logo_label = ttk.Label(parent_frame, image=self.logo_photo)
+                    logo_label.grid(row=0, column=2, sticky=tk.E, padx=(10, 0))
+                    
+                    # Set the logo as the application icon
+                    self.set_application_icon(logo_path)
+                    
+                    self.log_message("OilBoy logo loaded successfully")
+                    return
+                except Exception as pil_error:
+                    self.log_message(f"PIL error loading logo: {pil_error}")
+                    # Fall through to alternative paths
             else:
                 self.log_message(f"Warning: Logo file not found at {logo_path}")
+            
+            # Try alternative paths
+            alt_paths = [
+                "OilBoy_software logo.png",
+                os.path.join(os.path.dirname(sys.executable), "OilBoy_software logo.png"),
+                os.path.join(os.getcwd(), "OilBoy_software logo.png")
+            ]
+            for alt_path in alt_paths:
+                if os.path.exists(alt_path):
+                    self.log_message(f"Found logo at alternative path: {alt_path}")
+                    try:
+                        image = Image.open(alt_path)
+                        image = image.resize((100, 100), Image.Resampling.LANCZOS)
+                        self.logo_photo = ImageTk.PhotoImage(image)
+                        logo_label = ttk.Label(parent_frame, image=self.logo_photo)
+                        logo_label.grid(row=0, column=2, sticky=tk.E, padx=(10, 0))
+                        self.set_application_icon(alt_path)
+                        self.log_message("OilBoy logo loaded from alternative path")
+                        return
+                    except Exception as alt_error:
+                        self.log_message(f"Error with alternative path {alt_path}: {alt_error}")
+                        continue
+            
+            # Fallback to text logo
+            logo_label = ttk.Label(parent_frame, text="OilBoy", font=("Arial", 16, "bold"))
+            logo_label.grid(row=0, column=2, sticky=tk.E, padx=(10, 0))
+            self.log_message("Logo not found or PIL failed - using text fallback")
+            
         except Exception as e:
             self.log_message(f"Error loading logo: {e}")
+            # Fallback to text logo
+            logo_label = ttk.Label(parent_frame, text="OilBoy", font=("Arial", 16, "bold"))
+            logo_label.grid(row=0, column=2, sticky=tk.E, padx=(10, 0))
 
     def set_application_icon(self, logo_path):
         """Set the OilBoy logo as the application window icon"""
+        if not PIL_AVAILABLE:
+            self.log_message("PIL not available - skipping icon setting")
+            return
+            
         try:
             # Load the image for the icon
             image = Image.open(logo_path)
@@ -357,9 +447,21 @@ class OilBoyStandaloneApp:
 
     def create_ico_file(self, logo_path):
         """Create an ICO file from the logo and set it as the taskbar icon"""
+        if not PIL_AVAILABLE:
+            self.log_message("PIL not available - skipping ICO file creation")
+            return
+            
         try:
-            # Create ICO file path
-            ico_path = "oilboy_icon.ico"
+            # Create ICO file path - try to use the same directory as the executable
+            if getattr(sys, 'frozen', False):
+                # Running as compiled executable
+                base_dir = os.path.dirname(sys.executable)
+                ico_path = os.path.join(base_dir, "oilboy_icon.ico")
+            else:
+                # Running as Python script
+                ico_path = "oilboy_icon.ico"
+            
+            self.log_message(f"ICO file path: {ico_path}")
             
             # Check if ICO file already exists
             if os.path.exists(ico_path):
@@ -404,6 +506,10 @@ class OilBoyStandaloneApp:
 
     def set_icon_alternative(self, image_path):
         """Alternative method to set the application icon"""
+        if not PIL_AVAILABLE:
+            self.log_message("PIL not available - skipping alternative icon method")
+            return
+            
         try:
             # Load the image
             image = Image.open(image_path)
@@ -446,8 +552,17 @@ class OilBoyStandaloneApp:
             ICON_SMALL = 0
             ICON_BIG = 1
             
+            # Determine ICO file path
+            if getattr(sys, 'frozen', False):
+                # Running as compiled executable
+                base_dir = os.path.dirname(sys.executable)
+                ico_path = os.path.join(base_dir, "oilboy_icon.ico")
+            else:
+                # Running as Python script
+                ico_path = "oilboy_icon.ico"
+            
             # Load the ICO file using Windows API
-            if os.path.exists("oilboy_icon.ico"):
+            if os.path.exists(ico_path):
                 # Use LoadImage to load the icon
                 user32 = ctypes.windll.user32
                 kernel32 = ctypes.windll.kernel32
@@ -455,7 +570,7 @@ class OilBoyStandaloneApp:
                 # Load the icon
                 icon_handle = user32.LoadImageW(
                     None, 
-                    "oilboy_icon.ico", 
+                    ico_path, 
                     1,  # IMAGE_ICON
                     32, 32,  # width, height
                     0x00000010  # LR_LOADFROMFILE
@@ -468,6 +583,8 @@ class OilBoyStandaloneApp:
                     self.log_message("Taskbar icon refreshed using Windows API")
                 else:
                     self.log_message("Failed to load icon using Windows API")
+            else:
+                self.log_message(f"ICO file not found at: {ico_path}")
             
         except Exception as e:
             self.log_message(f"Error refreshing taskbar icon: {e}")
@@ -801,7 +918,10 @@ class OilBoyStandaloneApp:
         self.mode1_btn.grid(row=0, column=0, pady=(0, 10))
         
         self.mode2_btn = ttk.Button(buttons_frame, text="Execute Mode 2", command=self.execute_mode2, style='Mode.TButton', width=15)
-        self.mode2_btn.grid(row=1, column=0)
+        self.mode2_btn.grid(row=1, column=0, pady=(0, 10))
+        
+        self.dispense_oil_btn = ttk.Button(buttons_frame, text="Dispense Oil", command=self.dispense_oil, style='Mode.TButton', width=15)
+        self.dispense_oil_btn.grid(row=2, column=0, pady=(0, 0))
         
         # Log Frame
         log_frame = ttk.LabelFrame(main_frame, text="Log", padding="10")
@@ -828,21 +948,23 @@ class OilBoyStandaloneApp:
         clear_log_btn.grid(row=1, column=0, pady=(10, 0))
 
     def log_message(self, message):
-        """Add a message to the log with timestamp"""
-        timestamp = datetime.now().strftime("[%H:%M:%S]")
-        log_entry = f"{timestamp} {message}\n"
+        """Log message to both the UI and a debug file"""
+        current_time = datetime.now().strftime("%H:%M:%S")
+        formatted_message = f"[{current_time}] {message}"
         
+        # Write to debug file for compiled version debugging
         try:
-            # Check if the log_text widget still exists and is valid
-            if hasattr(self, 'log_text') and self.log_text.winfo_exists():
-                self.log_text.insert(tk.END, log_entry)
-                self.log_text.see(tk.END)
-            else:
-                # Fallback to print if widget is destroyed
-                print(log_entry.strip())
+            with open("oilboy_debug.log", "a", encoding="utf-8") as f:
+                f.write(f"{formatted_message}\n")
         except Exception:
-            # Fallback to print if any Tkinter error occurs
-            print(log_entry.strip())
+            pass  # Don't fail if we can't write to file
+        
+        # Log to UI if the log text widget exists
+        if hasattr(self, 'log_text'):
+            self.log_text.insert(tk.END, formatted_message + "\n")
+            self.log_text.see(tk.END)
+        else:
+            print(formatted_message)
 
     def clear_log(self):
         """Clear the log display"""
@@ -1300,6 +1422,27 @@ class OilBoyStandaloneApp:
         oil_amount = self.oil_amount_var.get()
         self.oilboy.send_command(f"OIL:{oil_amount}")
         self.log_message(f"Applied {oil_amount} steps of oil")
+
+    def dispense_oil(self):
+        """Dispense oil using the defined Oil Amount without any other commands"""
+        if self.shutting_down:
+            self.log_message("Cannot dispense oil - application is shutting down")
+            return
+            
+        if not self.oilboy_connected:
+            self.log_message("OilBoy not connected")
+            return
+        
+        try:
+            oil_amount = self.oil_amount_var.get()
+            self.log_message(f"Dispensing {oil_amount} steps of oil...")
+            success = self.oilboy.send_command(f"OIL:{oil_amount}")
+            if success:
+                self.log_message(f"Successfully dispensed {oil_amount} steps of oil")
+            else:
+                self.log_message("Failed to dispense oil - command not sent successfully")
+        except Exception as e:
+            self.log_message(f"Error dispensing oil: {e}")
 
     def test_oilboy_connection(self):
         """Test OilBoy connection with PING command"""

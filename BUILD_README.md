@@ -2,7 +2,7 @@
 
 **Author:** Colin Monks, PhD  
 **Company:** Intelligent Imaging Innovations, Inc.  
-**Version:** V1.0  
+**Version:** V1.0.1  
 **Date:** 2025
 
 ## Overview
@@ -172,8 +172,9 @@ For production distribution, consider code signing the executable:
 For technical support or questions about the build process:
 - **Contact:** Colin Monks, PhD
 - **Company:** Intelligent Imaging Innovations, Inc.
-- **Application Version:** V1.0
+- **Application Version:** V1.0.1
 
 ## Version History
 
-- **V1.0 (2025):** Initial release with PyInstaller build system 
+- **V1.0.1 (2025):** Enhanced BLE connectivity, improved Mode 2 objective reading, comprehensive diagnostics
+- **V1.0.0 (2025):** Initial release with PyInstaller build system 

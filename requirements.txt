@@ -1,7 +1,7 @@
 # OilBoy Standalone Controller - Requirements
 # Author: Colin Monks, PhD
 # Company: Intelligent Imaging Innovations, Inc.
-# Version: V1.0
+# Version: V1.0.1
 # Date: 2025
 
 # Core dependencies

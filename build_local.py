@@ -3,7 +3,7 @@
 OilBoy Standalone Controller - Local Build Script
 Author: Colin Monks, PhD
 Company: Intelligent Imaging Innovations, Inc.
-Version: V1.0
+Version: V1.0.1
 Date: 2025
 
 This script builds the OilBoy Standalone Controller into a Windows executable.

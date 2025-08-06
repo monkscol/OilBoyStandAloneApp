@@ -6,7 +6,7 @@ This script includes only the essential PIL modules that work.
 
 Author: Colin Monks, PhD
 Company: Intelligent Imaging Innovations, Inc.
-Version: V1.0
+Version: V1.0.1
 Date: 2025
 """
 
@@ -21,7 +21,7 @@ def main():
     print("OilBoy Standalone Controller - Simple Graphics Build")
     print("Author: Colin Monks, PhD")
     print("Company: Intelligent Imaging Innovations, Inc.")
-    print("Version: V1.0")
+    print("Version: V1.0.1")
     print("Date: 2025\n")
     
     # Clean previous builds

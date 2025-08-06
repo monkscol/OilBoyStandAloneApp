@@ -195,6 +195,13 @@ For technical support or questions about the OilBoy Standalone Application, plea
 
 ## Version History
 
+### v1.0.1
+- Fixed BLE connection issues with partial device name matching
+- Enhanced Mode 2 to read current objective fresh from SlideBook
+- Added comprehensive BLE diagnostics and error handling
+- Improved UI responsiveness with background threading
+- Enhanced logging with detailed connection status
+
 ### v1.0.0
 - Initial release
 - SlideBook socket integration

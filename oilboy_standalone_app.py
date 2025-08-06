@@ -9,7 +9,7 @@ Supports two modes:
 
 Author: Colin Monks, PhD
 Company: Intelligent Imaging Innovations, Inc.
-Version: V1.0
+Version: V1.0.1
 Date: 2025
 """
 
@@ -117,19 +117,31 @@ class OilBoyBLE:
 
     def scan_and_connect_with_serial(self, serial, burst_window=24):
         """Scan for OILBOY_<serial> and connect"""
-        if self.loop and not self.loop.is_closed():
+        if not self.loop or self.loop.is_closed():
+            self._emit_status("ERROR: Asyncio loop not running - BLE cannot function")
+            return False
+        
+        try:
             future = asyncio.run_coroutine_threadsafe(
                 self._scan_and_connect_with_serial_async(serial, burst_window), self.loop)
             return future.result(timeout=burst_window+30)
-        return False
+        except Exception as e:
+            self._emit_status(f"BLE scan error: {e}")
+            return False
 
     def connect_by_mac(self, mac):
         """Try to connect directly to a device by MAC address"""
-        if self.loop and not self.loop.is_closed():
+        if not self.loop or self.loop.is_closed():
+            self._emit_status("ERROR: Asyncio loop not running - BLE cannot function")
+            return False
+        
+        try:
             future = asyncio.run_coroutine_threadsafe(
                 self._connect_by_mac_async(mac), self.loop)
-            return future.result(timeout=5)
-        return False
+            return future.result(timeout=15)
+        except Exception as e:
+            self._emit_status(f"BLE MAC connect error: {e}")
+            return False
 
     async def _connect_by_mac_async(self, mac):
         self._emit_status(f"Trying direct connect to {mac}...")
@@ -155,17 +167,40 @@ class OilBoyBLE:
     async def _scan_and_connect_with_serial_async(self, serial, burst_window=24):
         target_name = f"OILBOY_{serial.strip().upper()}"
         self._emit_status(f"Scanning for {target_name} (up to {burst_window}s)...")
+        self._emit_status(f"💡 Will also accept partial matches like 'OILBOY_A' for '{target_name}'")
         start_time = asyncio.get_event_loop().time()
         attempt = 1
         while asyncio.get_event_loop().time() - start_time < burst_window:
             device = None
             try:
                 self._emit_status(f"Scan attempt {attempt}...")
-                devices = await BleakScanner.discover(timeout=1.0)
+                devices = await BleakScanner.discover(timeout=2.0)
+                self._emit_status(f"Found {len(devices)} BLE devices")
+                
+                # List all found devices for debugging
+                if devices:
+                    # Show all OILBOY devices and first few others
+                    oilboy_devices = [d.name for d in devices if d.name and "OILBOY" in d.name.upper()]
+                    other_devices = [d.name or "Unknown" for d in devices if not (d.name and "OILBOY" in d.name.upper())][:3]
+                    
+                    if oilboy_devices:
+                        self._emit_status(f"🎯 OILBOY devices: {', '.join(oilboy_devices)}")
+                    self._emit_status(f"📱 Found {len(devices)} total devices. Others: {', '.join(other_devices)}")
+                
+                # Look for exact match first, then partial match
                 for d in devices:
-                    if d.name and d.name.upper() == target_name:
-                        device = d
-                        break
+                    if d.name:
+                        device_name = d.name.upper()
+                        # Exact match
+                        if device_name == target_name:
+                            device = d
+                            self._emit_status(f"✅ Found exact match: {d.name}")
+                            break
+                        # Partial match for truncated names (e.g., "OILBOY_A" for "OILBOY_A001")
+                        elif device_name.startswith("OILBOY_") and target_name.startswith(device_name):
+                            device = d
+                            self._emit_status(f"✅ Found partial match: {d.name} (looking for {target_name})")
+                            break
             except Exception as e:
                 self._emit_status(f"Scan error: {e}")
             if device:
@@ -274,7 +309,7 @@ class OilBoyStandaloneApp:
     
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title("OilBoy Standalone Controller")
+        self.root.title("OilBoy Standalone Controller v1.0.1")
         self.root.geometry("800x700")
         
         # Initialize debug logging
@@ -754,7 +789,7 @@ class OilBoyStandaloneApp:
         author_frame = ttk.Frame(header_frame)
         author_frame.grid(row=0, column=0, sticky=tk.W)
         
-        version_label = ttk.Label(author_frame, text="V1.0", font=("Arial", 10))
+        version_label = ttk.Label(author_frame, text="V1.0.1", font=("Arial", 10))
         version_label.grid(row=0, column=0, sticky=tk.W)
         
         author_label = ttk.Label(author_frame, text="Colin Monks, PhD", font=("Arial", 10))
@@ -1087,9 +1122,62 @@ class OilBoyStandaloneApp:
 
     def connect_to_oilboy(self):
         """Connect to OilBoy via BLE"""
+        self.log_message("🔄 Connect OilBoy button clicked!")
+        
+        # Run connection in a separate thread to prevent UI blocking
+        def connection_worker():
+            self._connect_to_oilboy_impl()
+        
+        import threading
+        thread = threading.Thread(target=connection_worker, daemon=True)
+        thread.start()
+        self.log_message("🧵 Started connection in background thread")
+    
+    def _connect_to_oilboy_impl(self):
+        """Implementation of OilBoy connection"""
+        
         if not self.asyncio_loop:
-            self.log_message("Error: Asyncio loop not ready")
+            self.log_message("ERROR: Asyncio loop is None")
             return
+            
+        if self.asyncio_loop.is_closed():
+            self.log_message("ERROR: Asyncio loop is closed")
+            return
+        
+        self.log_message("✅ Asyncio loop is running")
+        self.log_message("🔍 Checking BLE adapter status...")
+        
+        # Test BLE adapter availability
+        try:
+            import platform
+            self.log_message(f"📱 OS: {platform.system()} {platform.release()}")
+            
+            self.log_message("🧪 Testing BLE adapter...")
+            
+            # Quick BLE adapter test with better error handling
+            def test_ble_adapter():
+                try:
+                    self.log_message("⏱️ Starting BLE discovery...")
+                    future = asyncio.run_coroutine_threadsafe(
+                        BleakScanner.discover(timeout=0.5), self.asyncio_loop)
+                    self.log_message("⏱️ Waiting for discovery result...")
+                    devices = future.result(timeout=3)  # Increased timeout
+                    self.log_message(f"✅ BLE adapter OK - can see {len(devices)} devices")
+                    return True
+                except asyncio.TimeoutError:
+                    self.log_message("⏰ BLE adapter test timed out")
+                    return False
+                except Exception as e:
+                    self.log_message(f"❌ BLE adapter ERROR: {type(e).__name__}: {e}")
+                    return False
+            
+            if not test_ble_adapter():
+                self.log_message("💡 Continuing without BLE test - will try direct connection...")
+                # Don't return here - continue with connection attempt
+                
+        except Exception as e:
+            self.log_message(f"🚨 BLE test setup failed: {e}")
+            # Don't return here - continue with connection attempt
         
         try:
             # Get serial number from UI
@@ -1324,8 +1412,11 @@ class OilBoyStandaloneApp:
                 self.log_message("Mode 2 cancelled - application shutting down")
                 return
                 
-            # Store current objective
+            # Read current objective fresh from SlideBook socket
+            self.log_message("Reading current objective from SlideBook...")
+            self.update_slidebook_state()
             current_obj = self.current_objective
+            self.log_message(f"Current objective detected: {current_obj}")
             
             # Step 1: Switch to OilBoy objective
             oilboy_objective = self.oilboy_obj_loc_var.get()

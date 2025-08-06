@@ -312,6 +312,12 @@ class OilBoyStandaloneApp:
         self.root.title("OilBoy Standalone Controller v1.0.1")
         self.root.geometry("800x700")
         
+        # Set Windows application model ID for proper taskbar behavior
+        self.set_windows_app_id()
+        
+        # Set application icon immediately for taskbar
+        self.set_early_icon()
+        
         # Initialize debug logging
         try:
             with open("oilboy_debug.log", "w", encoding="utf-8") as f:
@@ -623,6 +629,58 @@ class OilBoyStandaloneApp:
             
         except Exception as e:
             self.log_message(f"Error refreshing taskbar icon: {e}")
+
+    def set_windows_app_id(self):
+        """Set Windows Application Model ID for proper taskbar grouping"""
+        try:
+            import ctypes
+            from ctypes import wintypes
+            
+            # Set Application Model ID to ensure proper taskbar behavior
+            app_id = "IntelligentImaging.OilBoyController.1.0.1"
+            
+            # Call SetCurrentProcessExplicitAppUserModelID
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
+            
+        except Exception as e:
+            # Silently fail if not on Windows or missing libraries
+            pass
+
+    def set_early_icon(self):
+        """Set icon immediately after window creation for proper taskbar display"""
+        try:
+            # Try to set ICO file if it exists
+            ico_path = "oilboy_icon.ico"
+            if os.path.exists(ico_path):
+                try:
+                    self.root.iconbitmap(ico_path)
+                    return
+                except Exception:
+                    pass
+            
+            # Fallback: Try to create and set icon from PNG
+            logo_path = resource_path("OilBoy_software logo.png")
+            if os.path.exists(logo_path) and PIL_AVAILABLE:
+                try:
+                    # Create a simple icon from the logo
+                    image = Image.open(logo_path)
+                    
+                    # Resize to standard icon size
+                    icon_image = image.resize((32, 32), Image.Resampling.LANCZOS)
+                    icon_photo = ImageTk.PhotoImage(icon_image)
+                    
+                    # Set as window icon
+                    self.root.iconphoto(True, icon_photo)
+                    
+                    # Keep reference to prevent garbage collection
+                    self.early_icon_photo = icon_photo
+                    
+                except Exception:
+                    pass
+                    
+        except Exception:
+            # Silently fail - icon setting is not critical for functionality
+            pass
 
     def setup_dark_mode(self):
         """Apply dark mode styling to the application"""

@@ -148,6 +148,8 @@ class OilBoyBLE:
         try:
             self.client = BleakClient(mac)
             await asyncio.wait_for(self.client.connect(), timeout=10.0)
+            # Record connected device MAC for persistence
+            self.device_address = mac
             self._emit_status("Connected. Setting up services...")
             await self._setup_characteristics_async()
             if self.command_characteristic and self.tx_characteristic:
@@ -209,6 +211,11 @@ class OilBoyBLE:
                     try:
                         self.client = BleakClient(device)
                         await asyncio.wait_for(self.client.connect(), timeout=10.0)
+                        # Record connected device MAC for persistence
+                        try:
+                            self.device_address = getattr(device, 'address', None)
+                        except Exception:
+                            self.device_address = None
                         self._emit_status("Connected. Setting up services...")
                         await self._setup_characteristics_async()
                         if self.command_characteristic and self.tx_characteristic:
@@ -889,6 +896,12 @@ class OilBoyStandaloneApp:
         self.known_devices_combo.grid(row=1, column=1, sticky=tk.W, padx=(10, 0), pady=(5, 0))
         self.known_devices_combo.bind('<<ComboboxSelected>>', self.on_known_device_selected)
         
+        # MAC Address entry
+        ttk.Label(oilboy_config_frame, text="MAC Address:").grid(row=2, column=0, sticky=tk.W, pady=(5, 0))
+        self.oilboy_mac_var = tk.StringVar(value="")
+        self.oilboy_mac_entry = ttk.Entry(oilboy_config_frame, textvariable=self.oilboy_mac_var, width=17)
+        self.oilboy_mac_entry.grid(row=2, column=1, sticky=tk.W, padx=(10, 0), pady=(5, 0))
+
         # Populate known devices dropdown
         self.populate_known_devices()
         
@@ -899,10 +912,10 @@ class OilBoyStandaloneApp:
                                              foreground="#ff6b6b")  # Red for disconnected
         self.oilboy_status_label.grid(row=2, column=1, sticky=tk.W, padx=(10, 0))
         
-        # Battery Status
+        # Battery Status (compact)
         ttk.Label(status_frame, text="Battery:").grid(row=3, column=0, sticky=tk.W)
         self.battery_var = tk.StringVar(value="--")
-        self.battery_label = ttk.Label(status_frame, textvariable=self.battery_var)
+        self.battery_label = ttk.Label(status_frame, textvariable=self.battery_var, width=12)
         self.battery_label.grid(row=3, column=1, sticky=tk.W, padx=(10, 0))
         
         # Connection Buttons
@@ -920,19 +933,16 @@ class OilBoyStandaloneApp:
         self.save_oilboy_config_btn = ttk.Button(button_frame, text="Save OilBoy Config", 
                                                 command=self.save_oilboy_config, width=15)
         self.save_oilboy_config_btn.grid(row=2, column=0, pady=2)
-        
-        self.check_battery_btn = ttk.Button(button_frame, text="Check Battery", 
-                                           command=self.check_battery, width=15)
-        self.check_battery_btn.grid(row=3, column=0, pady=2)
-        
-        self.test_connection_btn = ttk.Button(button_frame, text="Test Connection", 
-                                             command=self.test_oilboy_connection_ui, width=15)
-        self.test_connection_btn.grid(row=4, column=0, pady=2)
 
+        # Connect by MAC Button
+        self.connect_by_mac_btn = ttk.Button(button_frame, text="Connect by MAC", 
+                                             command=self.connect_to_oilboy_by_mac, width=15)
+        self.connect_by_mac_btn.grid(row=3, column=0, pady=2)
+        
         # Remove Trusted OilBoy Button
         self.remove_trusted_btn = ttk.Button(button_frame, text="Remove Trusted", 
                                              command=self.remove_trusted_oilboy, width=15)
-        self.remove_trusted_btn.grid(row=5, column=0, pady=2)
+        self.remove_trusted_btn.grid(row=4, column=0, pady=2)
         
 
         
@@ -1167,6 +1177,11 @@ class OilBoyStandaloneApp:
             self.known_devices_combo['values'] = known_devices
             if known_devices:
                 self.known_devices_combo.set(known_devices[0])
+                # Also populate MAC field for the selected device
+                first_serial = known_devices[0]
+                mac = self.config["oilboy"]["known_devices"].get(first_serial, "")
+                if hasattr(self, 'oilboy_mac_var'):
+                    self.oilboy_mac_var.set(mac)
         except Exception as e:
             self.log_message(f"Error populating known devices: {e}")
 
@@ -1177,8 +1192,57 @@ class OilBoyStandaloneApp:
             if selected_serial:
                 self.oilboy_serial_var.set(selected_serial)
                 self.log_message(f"Selected OilBoy: {selected_serial}")
+                # Populate MAC field if we have a saved MAC
+                try:
+                    mac = self.config["oilboy"]["known_devices"].get(selected_serial, "")
+                    if hasattr(self, 'oilboy_mac_var'):
+                        self.oilboy_mac_var.set(mac)
+                except Exception:
+                    pass
         except Exception as e:
             self.log_message(f"Error selecting known device: {e}")
+
+    def connect_to_oilboy_by_mac(self):
+        """Connect to OilBoy using a manually entered MAC address and persist it for the current serial."""
+        self.log_message("🔄 Connect by MAC button clicked!")
+        
+        def worker():
+            try:
+                mac = self.oilboy_mac_var.get().strip()
+                if not mac:
+                    self.log_message("Error: Please enter a MAC address")
+                    return
+
+                # Create OilBoy BLE object if not exists
+                if not self.oilboy:
+                    self.oilboy = OilBoyBLE(
+                        status_callback=self.log_message,
+                        connected_callback=self.on_oilboy_connected,
+                        battery_callback=self.on_battery_update
+                    )
+                    self.oilboy.loop = self.asyncio_loop
+
+                self.log_message(f"Trying direct MAC connection to {mac}...")
+                success = self.oilboy.connect_by_mac(mac)
+                if success:
+                    self.log_message("MAC connection successful!")
+                    # Persist for current serial if provided
+                    serial = self.oilboy_serial_var.get().strip()
+                    if serial:
+                        self.config["oilboy"].setdefault("known_devices", {})[serial] = mac
+                        self.save_config()
+                        try:
+                            self.populate_known_devices()
+                        except Exception:
+                            pass
+                    # Trigger battery request like normal connect
+                    self._safe_battery_request()
+                else:
+                    self.log_message("MAC connection failed")
+            except Exception as e:
+                self.log_message(f"Error connecting by MAC: {e}")
+
+        threading.Thread(target=worker, daemon=True).start()
 
     def remove_trusted_oilboy(self):
         """Remove the selected trusted OilBoy from the trusted list and persist."""
@@ -1339,6 +1403,9 @@ class OilBoyStandaloneApp:
                     # Refresh trusted list so the new device appears immediately
                     try:
                         self.populate_known_devices()
+                        # Update MAC field in UI
+                        if hasattr(self, 'oilboy_mac_var'):
+                            self.oilboy_mac_var.set(self.oilboy.device_address)
                     except Exception:
                         pass
         else:

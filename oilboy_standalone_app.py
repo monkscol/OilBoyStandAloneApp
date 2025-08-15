@@ -775,11 +775,8 @@ class OilBoyStandaloneApp:
                 "port": 65432
             },
             "oilboy": {
-                "serial_number": "A002",
-                "known_devices": {
-                    "A002": "DC:54:75:EB:81:B1",
-                    "A003": "DC:54:75:EB:6F:2D"
-                }
+                "serial_number": "",
+                "known_devices": {}
             },
             "settings": {
                 "oilboy_objective_location": "",
@@ -884,8 +881,8 @@ class OilBoyStandaloneApp:
         self.oilboy_serial_entry = ttk.Entry(oilboy_config_frame, textvariable=self.oilboy_serial_var, width=15)
         self.oilboy_serial_entry.grid(row=0, column=1, sticky=tk.W, padx=(10, 0))
         
-        # Known devices dropdown
-        ttk.Label(oilboy_config_frame, text="Known Devices:").grid(row=1, column=0, sticky=tk.W, pady=(5, 0))
+        # Trusted OilBoys dropdown
+        ttk.Label(oilboy_config_frame, text="Trusted OilBoys:").grid(row=1, column=0, sticky=tk.W, pady=(5, 0))
         self.known_devices_var = tk.StringVar()
         self.known_devices_combo = ttk.Combobox(oilboy_config_frame, textvariable=self.known_devices_var, 
                                                state="readonly", width=15)
@@ -931,6 +928,11 @@ class OilBoyStandaloneApp:
         self.test_connection_btn = ttk.Button(button_frame, text="Test Connection", 
                                              command=self.test_oilboy_connection_ui, width=15)
         self.test_connection_btn.grid(row=4, column=0, pady=2)
+
+        # Remove Trusted OilBoy Button
+        self.remove_trusted_btn = ttk.Button(button_frame, text="Remove Trusted", 
+                                             command=self.remove_trusted_oilboy, width=15)
+        self.remove_trusted_btn.grid(row=5, column=0, pady=2)
         
 
         
@@ -1178,6 +1180,25 @@ class OilBoyStandaloneApp:
         except Exception as e:
             self.log_message(f"Error selecting known device: {e}")
 
+    def remove_trusted_oilboy(self):
+        """Remove the selected trusted OilBoy from the trusted list and persist."""
+        try:
+            selected_serial = self.known_devices_var.get().strip()
+            if not selected_serial:
+                messagebox.showinfo("Remove Trusted", "Please select a trusted OilBoy to remove.")
+                return
+
+            if selected_serial in self.config["oilboy"]["known_devices"]:
+                del self.config["oilboy"]["known_devices"][selected_serial]
+                # If the removed serial is currently in the serial field, keep it but it won't be considered trusted
+                self.save_config()
+                self.populate_known_devices()
+                self.log_message(f"Removed trusted OilBoy: {selected_serial}")
+            else:
+                messagebox.showinfo("Remove Trusted", f"{selected_serial} is not in trusted list.")
+        except Exception as e:
+            self.log_message(f"Error removing trusted OilBoy: {e}")
+
     def connect_to_oilboy(self):
         """Connect to OilBoy via BLE"""
         self.log_message("🔄 Connect OilBoy button clicked!")
@@ -1238,8 +1259,12 @@ class OilBoyStandaloneApp:
             # Don't return here - continue with connection attempt
         
         try:
-            # Get serial number from UI
+            # Get serial number from UI (accept either raw serial like "A003" or full name like "OILBOY_A003")
             serial = self.oilboy_serial_var.get().strip()
+            if serial.upper().startswith("OILBOY_"):
+                serial = serial.split("_", 1)[1]
+                # Update the entry to normalized serial for consistency
+                self.oilboy_serial_var.set(serial)
             if not serial:
                 self.log_message("Error: Please enter OilBoy serial number")
                 return
@@ -1248,7 +1273,7 @@ class OilBoyStandaloneApp:
             self.config["oilboy"]["serial_number"] = serial
             
             # Check if we have a known MAC address for this serial
-            known_mac = self.config["oilboy"]["known_devices"].get(serial)
+            known_mac = self.config["oilboy"].setdefault("known_devices", {}).get(serial)
             
             # Create OilBoy BLE object if not exists
             if not self.oilboy:
@@ -1274,8 +1299,8 @@ class OilBoyStandaloneApp:
                         import time
                         time.sleep(2)
             
-            # Fallback to scan and connect with retries
-            self.log_message(f"Scanning for OilBoy {serial}...")
+            # Fallback to scan and connect with retries (accept bare or prefixed entry)
+            self.log_message(f"Scanning for OilBoy {serial} (OILBOY_{serial})...")
             for attempt in range(3):
                 self.log_message(f"Scan attempt {attempt + 1}/3...")
                 success = self.oilboy.scan_and_connect_with_serial(serial)
@@ -1311,6 +1336,11 @@ class OilBoyStandaloneApp:
                     self.config["oilboy"]["known_devices"][serial] = self.oilboy.device_address
                     self.save_config()
                     self.log_message(f"Saved MAC address {self.oilboy.device_address} for serial {serial}")
+                    # Refresh trusted list so the new device appears immediately
+                    try:
+                        self.populate_known_devices()
+                    except Exception:
+                        pass
         else:
             self.oilboy_status_var.set("Disconnected")
             self.oilboy_status_label.configure(foreground="#ff6b6b")  # Red for disconnected
@@ -1573,25 +1603,31 @@ class OilBoyStandaloneApp:
         self.log_message(f"Applied {oil_amount} steps of oil")
 
     def dispense_oil(self):
-        """Dispense oil using the defined Oil Amount without any other commands"""
+        """Dispense oil using the defined Oil Amount.
+        Mirrors Mode 1 behavior: if not connected, attempt connection; then rely on
+        apply_oil() which PINGs and uses full reconnection logic before sending OIL once.
+        """
         if self.shutting_down:
             self.log_message("Cannot dispense oil - application is shutting down")
             return
-            
-        if not self.oilboy_connected:
-            self.log_message("OilBoy not connected")
-            return
-        
-        try:
-            oil_amount = self.oil_amount_var.get()
-            self.log_message(f"Dispensing {oil_amount} steps of oil...")
-            success = self.oilboy.send_command(f"OIL:{oil_amount}")
-            if success:
-                self.log_message(f"Successfully dispensed {oil_amount} steps of oil")
-            else:
-                self.log_message("Failed to dispense oil - command not sent successfully")
-        except Exception as e:
-            self.log_message(f"Error dispensing oil: {e}")
+
+        def worker():
+            try:
+                if not self.oilboy_connected:
+                    self.log_message("OilBoy not connected; attempting connection...")
+                    self._connect_to_oilboy_impl()
+                    if not self.oilboy_connected:
+                        self.log_message("Failed to connect to OilBoy; cannot dispense.")
+                        return
+
+                # Use the same reconnection logic as Mode 1
+                oil_amount = self.oil_amount_var.get()
+                self.log_message(f"Dispensing {oil_amount} steps of oil...")
+                self.apply_oil()
+            except Exception as e:
+                self.log_message(f"Error dispensing oil: {e}")
+
+        threading.Thread(target=worker, daemon=True).start()
 
     def test_oilboy_connection(self):
         """Test OilBoy connection with PING command"""

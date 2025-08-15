@@ -1,81 +1,350 @@
 === OilBoy Standalone Controller Debug Log ===
-Started at: 2025-08-06 13:29:49
+Started at: 2025-08-15 08:32:17
 Frozen: False
 PIL Available: True
 ==================================================
-[13:29:49] FORCE: PIL imported successfully in load_logo
-[13:29:49] Looking for logo at: C:\Users\colin\Python_code\OilBoyStandAloneApp_new\OilBoy_software logo.png
-[13:29:49] Logo file found, attempting to load with PIL...
-[13:29:49] Image opened successfully, size: (1024, 1024)
-[13:29:49] Image resized to 100x100
-[13:29:49] PhotoImage created successfully
-[13:29:49] ICO file path: oilboy_icon.ico
-[13:29:49] ICO file already exists: oilboy_icon.ico
-[13:29:49] Taskbar icon set successfully
-[13:29:49] Application icon set successfully
-[13:29:49] OilBoy logo loaded successfully
-[13:29:50] Taskbar icon refreshed using Windows API
-[13:29:50] Connecting to SlideBook at 127.0.0.1:65432...
-[13:29:50] SlideBook connected successfully
-[13:29:50] Loaded 5 objectives
-[13:29:53] 🔄 Connect OilBoy button clicked!
-[13:29:53] ✅ Asyncio loop is running
-[13:29:53] 🧵 Started connection in background thread
-[13:29:53] 🔍 Checking BLE adapter status...
-[13:29:53] 📱 OS: Windows 11
-[13:29:53] 🧪 Testing BLE adapter...
-[13:29:53] ⏱️ Starting BLE discovery...
-[13:29:53] ⏱️ Waiting for discovery result...
-[13:29:54] ✅ BLE adapter OK - can see 16 devices
-[13:29:54] Scanning for OilBoy A001...
-[13:29:54] Scan attempt 1/3...
-[13:29:54] Scanning for OILBOY_A001 (up to 24s)...
-[13:29:54] 💡 Will also accept partial matches like 'OILBOY_A' for 'OILBOY_A001'
-[13:29:54] Scan attempt 1...
-[13:29:56] Found 42 BLE devices
-[13:29:56] 📱 Found 42 total devices. Others: Unknown, Unknown, 228DB3E
-[13:29:56] Scan attempt 2...
-[13:29:58] Found 40 BLE devices
-[13:29:58] 📱 Found 40 total devices. Others: OI, 228DB3E, Unknown
-[13:29:59] Scan attempt 3...
-[13:30:01] Found 39 BLE devices
-[13:30:01] 📱 Found 39 total devices. Others: Unknown, Unknown, Unknown
-[13:30:01] Scan attempt 4...
-[13:30:03] Found 38 BLE devices
-[13:30:03] 🎯 OILBOY devices: OILBOY_A003
-[13:30:03] 📱 Found 38 total devices. Others: Unknown, Unknown, Unknown
-[13:30:04] Scan attempt 5...
-[13:30:06] Found 37 BLE devices
-[13:30:06] 📱 Found 37 total devices. Others: WSPK4, Unknown, Unknown
-[13:30:06] Scan attempt 6...
-[13:30:08] Found 38 BLE devices
-[13:30:08] 🎯 OILBOY devices: OILBOY_A
-[13:30:08] 📱 Found 38 total devices. Others: Unknown, Unknown, Unknown
-[13:30:08] ✅ Found partial match: OILBOY_A (looking for OILBOY_A001)
-[13:30:08] Found OILBOY_A001 at DC:54:75:EB:82:81. Connecting...
-[13:30:18] Connection attempt 1 timed out.
-[13:30:22] Connected. Setting up services...
-[13:30:22] OilBoy connected successfully
-[13:30:22] OilBoy is ready.
-[13:30:22] Scan connection successful!
-[13:30:23] Requesting battery status after connection...
-[13:30:25] Requesting battery status...
-[13:30:27] Battery status request timed out - OilBoy may not be responding
-[13:30:27] Error sending command: 
-[13:30:27] Command sent: BATTERY
-[13:30:27] Battery status request sent successfully
-[13:30:57] OilBoy: LIGHT_SLEEP_ACTIVE
-[13:31:09] Dispensing 500 steps of oil...
-[13:31:09] OilBoy: OIL_OK:500ms
-[13:31:13] Error dispensing oil: 
-[13:31:13] OilBoy: OIL_OK:500ms
-[13:31:13] Error sending command: 
-[13:31:13] Application shutdown initiated...
-[13:31:13] Disconnecting from OilBoy...
-[13:31:18] Error disconnecting OilBoy: 
-[13:31:18] Disconnecting from SlideBook...
-[13:31:18] SlideBook socket closed cleanly
-[13:31:18] Asyncio loop stopped
-[13:31:18] Window geometry saved: 736x817+746+1
-[13:31:18] Configuration saved
-[13:31:18] Application shutdown complete
+[08:32:17] FORCE: PIL imported successfully in load_logo
+[08:32:17] Looking for logo at: C:\Users\colin\Python_code\OilBoyStandAloneApp_new\OilBoy_software logo.png
+[08:32:17] Logo file found, attempting to load with PIL...
+[08:32:17] Image opened successfully, size: (1024, 1024)
+[08:32:17] Image resized to 100x100
+[08:32:17] PhotoImage created successfully
+[08:32:17] ICO file path: oilboy_icon.ico
+[08:32:17] ICO file already exists: oilboy_icon.ico
+[08:32:17] Taskbar icon set successfully
+[08:32:17] Application icon set successfully
+[08:32:17] OilBoy logo loaded successfully
+[08:32:18] Taskbar icon refreshed using Windows API
+[08:32:18] Connecting to SlideBook at 127.0.0.1:65432...
+[08:32:18] SlideBook connected successfully
+[08:32:18] Loaded 5 objectives
+[08:32:23] 🔄 Connect OilBoy button clicked!
+[08:32:23] ✅ Asyncio loop is running
+[08:32:23] 🧵 Started connection in background thread
+[08:32:23] 🔍 Checking BLE adapter status...
+[08:32:23] 📱 OS: Windows 11
+[08:32:23] 🧪 Testing BLE adapter...
+[08:32:23] ⏱️ Starting BLE discovery...
+[08:32:23] ⏱️ Waiting for discovery result...
+[08:32:24] ✅ BLE adapter OK - can see 14 devices
+[08:32:24] Trying MAC connection to DC:54:75:EB:82:81...
+[08:32:24] MAC connection attempt 1/3...
+[08:32:24] Trying direct connect to DC:54:75:EB:82:81...
+[08:32:26] Connected. Setting up services...
+[08:32:26] OilBoy connected successfully
+[08:32:26] OilBoy is ready.
+[08:32:26] MAC connection successful!
+[08:32:27] Requesting battery status after connection...
+[08:32:29] Requesting battery status...
+[08:32:31] Battery status request timed out - OilBoy may not be responding
+[08:32:31] Error sending command: 
+[08:32:31] Command sent: BATTERY
+[08:32:31] Battery status request sent successfully
+[08:32:34] Dispensing 500 steps of oil...
+[08:32:34] Testing OilBoy connection with PING...
+[08:32:34] OilBoy: PONG
+[08:32:34] OilBoy: PONG
+[08:32:34] Command sent: PING
+[08:32:34] OilBoy PING successful
+[08:32:34] OilBoy: OIL_OK:500ms
+[08:32:35] OilBoy: OIL_OK:500ms
+[08:32:35] Command sent: OIL:500
+[08:32:35] Applied 500 steps of oil
+[08:36:58] Dispensing 500 steps of oil...
+[08:36:58] Testing OilBoy connection with PING...
+[08:36:58] Error sending command: Not connected
+[08:36:58] OilBoy PING failed
+[08:36:58] OilBoy connection test failed, attempting reconnection...
+[08:36:58] Attempting OilBoy reconnection...
+[08:36:58] OilBoy disconnected
+[08:36:58] Disconnected from OilBoy.
+[08:36:59] Trying MAC reconnection to DC:54:75:EB:82:81...
+[08:36:59] MAC reconnection attempt 1/3...
+[08:36:59] Trying direct connect to DC:54:75:EB:82:81...
+[08:37:02] Connected. Setting up services...
+[08:37:02] OilBoy connected successfully
+[08:37:02] OilBoy is ready.
+[08:37:02] OilBoy reconnected via MAC address
+[08:37:03] Requesting battery status after connection...
+[08:37:05] Requesting battery status...
+[08:37:07] Battery status request timed out - OilBoy may not be responding
+[08:37:07] Error sending command: 
+[08:37:07] Command sent: BATTERY
+[08:37:07] Battery status request sent successfully
+[08:37:07] Testing OilBoy connection with PING...
+[08:37:07] OilBoy: PONG
+[08:37:07] OilBoy: PONG
+[08:37:07] Command sent: PING
+[08:37:07] OilBoy PING successful
+[08:37:08] OilBoy: OIL_OK:500ms
+[08:37:08] OilBoy: OIL_OK:500ms
+[08:37:08] Command sent: OIL:500
+[08:37:08] Applied 500 steps of oil
+[08:37:14] Dispensing 500 steps of oil...
+[08:37:14] Testing OilBoy connection with PING...
+[08:37:14] OilBoy: PONG
+[08:37:14] OilBoy: PONG
+[08:37:14] Command sent: PING
+[08:37:14] OilBoy PING successful
+[08:37:15] OilBoy: OIL_OK:500ms
+[08:37:15] OilBoy: OIL_OK:500ms
+[08:37:15] Command sent: OIL:500
+[08:37:15] Applied 500 steps of oil
+[08:37:45] OilBoy: LIGHT_SLEEP_ACTIVE
+[08:38:15] OilBoy: LIGHT_SLEEP_ACTIVE
+[08:38:32] Dispensing 500 steps of oil...
+[08:38:32] Testing OilBoy connection with PING...
+[08:38:32] OilBoy: PONG
+[08:38:32] OilBoy: PONG
+[08:38:32] Command sent: PING
+[08:38:32] OilBoy PING successful
+[08:38:32] OilBoy: OIL_OK:500ms
+[08:38:33] OilBoy: OIL_OK:500ms
+[08:38:33] Command sent: OIL:500
+[08:38:33] Applied 500 steps of oil
+[08:39:02] OilBoy: LIGHT_SLEEP_ACTIVE
+[08:39:33] OilBoy: LIGHT_SLEEP_ACTIVE
+[08:40:03] OilBoy: LIGHT_SLEEP_ACTIVE
+[08:40:33] OilBoy: LIGHT_SLEEP_ACTIVE
+[08:41:03] OilBoy: LIGHT_SLEEP_ACTIVE
+[08:41:33] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:29:57] Dispensing 500 steps of oil...
+[09:29:57] Testing OilBoy connection with PING...
+[09:29:58] Error sending command: Not connected
+[09:29:58] OilBoy PING failed
+[09:29:58] OilBoy connection test failed, attempting reconnection...
+[09:29:58] Attempting OilBoy reconnection...
+[09:29:58] OilBoy disconnected
+[09:29:58] Disconnected from OilBoy.
+[09:29:59] Trying MAC reconnection to DC:54:75:EB:82:81...
+[09:29:59] MAC reconnection attempt 1/3...
+[09:29:59] Trying direct connect to DC:54:75:EB:82:81...
+[09:30:02] Connected. Setting up services...
+[09:30:02] OilBoy connected successfully
+[09:30:02] OilBoy is ready.
+[09:30:02] OilBoy reconnected via MAC address
+[09:30:03] Requesting battery status after connection...
+[09:30:05] Requesting battery status...
+[09:30:07] Battery status request timed out - OilBoy may not be responding
+[09:30:07] Error sending command: 
+[09:30:07] Command sent: BATTERY
+[09:30:07] Battery status request sent successfully
+[09:30:07] Testing OilBoy connection with PING...
+[09:30:07] Command sent: PING
+[09:30:07] OilBoy: PONG
+[09:30:07] OilBoy: PONG
+[09:30:07] OilBoy PING successful
+[09:30:08] OilBoy: OIL_OK:500ms
+[09:30:08] OilBoy: OIL_OK:500ms
+[09:30:08] Command sent: OIL:500
+[09:30:08] Applied 500 steps of oil
+[09:30:38] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:31:08] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:31:38] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:32:08] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:32:39] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:33:09] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:33:39] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:34:09] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:34:39] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:35:10] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:35:40] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:36:10] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:36:40] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:37:10] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:37:41] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:38:11] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:38:41] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:39:11] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:39:41] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:39:54] Dispensing 500 steps of oil...
+[09:39:54] Testing OilBoy connection with PING...
+[09:39:54] OilBoy: PONG
+[09:39:54] Command sent: PING
+[09:39:54] OilBoy PING successful
+[09:39:54] OilBoy: PONG
+[09:39:54] OilBoy: OIL_OK:500ms
+[09:39:55] OilBoy: OIL_OK:500ms
+[09:39:55] Command sent: OIL:500
+[09:39:55] Applied 500 steps of oil
+[09:40:24] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:40:55] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:41:25] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:41:55] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:42:25] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:42:55] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:43:26] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:43:56] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:44:26] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:44:56] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:45:26] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:45:57] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:46:27] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:46:57] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:47:27] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:47:57] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:48:28] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:48:58] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:49:28] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:49:58] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:50:28] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:50:59] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:51:29] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:51:59] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:52:29] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:52:59] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:53:30] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:54:00] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:54:30] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:55:00] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:55:30] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:56:01] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:56:31] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:57:01] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:57:31] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:58:01] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:58:33] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:59:02] OilBoy: LIGHT_SLEEP_ACTIVE
+[09:59:32] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:00:03] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:00:32] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:01:03] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:01:33] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:02:03] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:02:33] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:03:03] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:03:34] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:04:04] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:04:34] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:05:04] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:05:34] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:06:05] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:06:35] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:07:05] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:07:35] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:08:05] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:08:36] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:09:06] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:09:36] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:10:06] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:10:36] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:11:07] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:11:37] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:12:07] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:12:37] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:13:07] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:13:38] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:14:08] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:14:38] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:15:08] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:15:38] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:16:09] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:16:39] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:17:09] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:17:40] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:18:09] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:18:40] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:19:10] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:19:40] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:20:10] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:20:40] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:21:11] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:21:41] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:22:11] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:22:41] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:23:11] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:23:42] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:24:12] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:24:42] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:25:12] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:25:42] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:26:13] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:26:43] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:27:13] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:27:43] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:28:13] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:28:44] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:29:14] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:29:44] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:30:14] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:30:15] OilBoy: PING
+[10:30:44] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:31:15] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:31:45] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:32:15] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:32:45] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:33:15] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:33:46] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:34:16] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:34:46] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:35:16] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:35:47] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:36:17] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:36:47] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:37:17] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:37:47] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:38:17] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:38:48] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:39:18] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:39:48] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:40:18] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:40:48] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:41:19] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:41:49] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:42:19] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:42:49] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:43:19] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:43:50] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:44:20] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:44:50] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:45:20] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:45:50] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:46:21] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:46:51] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:47:21] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:47:51] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:48:21] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:48:53] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:49:22] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:49:52] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:50:22] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:50:52] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:51:23] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:51:53] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:52:23] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:52:53] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:53:23] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:53:54] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:54:24] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:54:54] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:55:24] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:55:54] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:56:25] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:56:55] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:57:25] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:57:55] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:58:26] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:58:56] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:59:26] OilBoy: LIGHT_SLEEP_ACTIVE
+[10:59:56] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:00:26] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:00:56] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:01:28] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:01:57] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:02:27] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:02:57] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:03:28] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:03:58] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:04:28] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:04:59] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:05:28] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:05:58] OilBoy: LIGHT_SLEEP_ACTIVE
+[11:06:10] Application shutdown initiated...
+[11:06:10] Disconnecting from OilBoy...
+[11:06:15] Error disconnecting OilBoy: 
+[11:06:15] Disconnecting from SlideBook...
+[11:06:15] SlideBook socket closed cleanly
+[11:06:15] Asyncio loop stopped
+[11:06:15] Window geometry saved: 736x830+794+0
+[11:06:15] Configuration saved
+[11:06:15] Application shutdown complete

@@ -6,17 +6,18 @@
     "oilboy": {
         "serial_number": "A001",
         "known_devices": {
-            "A002": "DC:54:75:EB:81:B1",
-            "A003": "DC:54:75:EB:6F:2D"
+            "A003": "DC:54:75:EB:6F:2D",
+            "A001": "DC:54:75:EB:82:81"
         }
     },
     "settings": {
         "oilboy_objective_location": "OilBoy",
-        "oilboy_offset_microns": 50.0,
+        "oilboy_offset_microns": 1000.0,
         "default_oil_amount": 500,
-        "default_z_drop": 50.0
+        "default_z_drop": 50.0,
+        "default_destination_objective": ""
     },
     "window": {
-        "geometry": "736x817+746+1"
+        "geometry": "736x830+794+0"
     }
 }

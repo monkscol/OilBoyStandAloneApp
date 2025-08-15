@@ -1,1 +1,21 @@
+# Python caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build artifacts
+build/
+dist/
+installer/
+*.spec
+
+# Logs and generated files
+oilboy_debug.log
+*.log
+oilboy_icon.ico
+
+# OS-specific
+.DS_Store
+Thumbs.db
 /__pycache__

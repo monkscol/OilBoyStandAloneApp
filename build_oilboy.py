@@ -24,16 +24,19 @@ def main():
     print("Version: V1.0.1")
     print("Date: 2025\n")
     
-    # Create icon file first
-    print("Creating application icon...")
-    try:
-        result = subprocess.run([sys.executable, "create_icon.py"], check=True, capture_output=True, text=True)
-        print("✓ Icon created successfully")
-    except subprocess.CalledProcessError as e:
-        print("⚠ Warning: Could not create icon file")
-        print("  Icon will be created at runtime instead")
-    except FileNotFoundError:
-        print("⚠ Warning: create_icon.py not found")
+    # Create icon file first (only if missing)
+    if not os.path.exists("oilboy_icon.ico"):
+        print("Creating application icon...")
+        try:
+            result = subprocess.run([sys.executable, "create_icon.py"], check=True, capture_output=True, text=True)
+            print("✓ Icon created successfully")
+        except subprocess.CalledProcessError as e:
+            print("⚠ Warning: Could not create icon file")
+            print("  Icon will be created at runtime instead")
+        except FileNotFoundError:
+            print("⚠ Warning: create_icon.py not found")
+    else:
+        print("✓ Icon already exists, skipping creation")
     
     # Clean previous builds
     print("Cleaning previous builds...")
